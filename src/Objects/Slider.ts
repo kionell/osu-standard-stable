@@ -160,6 +160,8 @@ export class Slider extends StandardHitObject
    */
   tickDistanceMultiplier = 1;
 
+  sliderVelocity = 1;
+  generateTicks = true;
 
   get head(): SliderHead | null {
     const obj = this.nestedHitObjects.find((n) => n instanceof SliderHead);
@@ -177,16 +179,13 @@ export class Slider extends StandardHitObject
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
     const timingPoint = controlPoints.timingPointAt(this.startTime);
-    const difficultyPoint = controlPoints.difficultyPointAt(this.startTime);
 
     const scoringDistance = StandardHitObject.BASE_SCORING_DISTANCE
-      * difficulty.sliderMultiplier * difficultyPoint.sliderVelocity;
-
-    const generateTicks = difficultyPoint.generateTicks;
+      * difficulty.sliderMultiplier * this.sliderVelocity;
 
     this.velocity = scoringDistance / timingPoint.beatLength;
-    this.tickDistance = generateTicks
-      ? (scoringDistance / difficulty.sliderTickRate) * this.tickRate
+    this.tickDistance = this.generateTicks
+      ? scoringDistance / difficulty.sliderTickRate * this.tickDistanceMultiplier
       : Infinity;
   }
 
