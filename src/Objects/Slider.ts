@@ -14,31 +14,28 @@ import { SliderTail } from './SliderTail';
 import { StandardHitWindows } from '../Scoring';
 
 export class Slider extends StandardHitObject implements ISlidableObject {
+  /**
+   * Spacing between {@link SliderTick}s of this {@link Slider}.
+   */
   tickDistance = 0;
 
+  /**
+   * Use {@link tickDistanceMultiplier} instead.
+   * @deprecated
+   */
   tickRate = 1;
 
+  /**
+   * The computed velocity of this {@link Slider}.
+   * This is the amount of path distance travelled in 1 ms.
+   */
   velocity = 1;
 
+  /**
+   * This is obsolete and will be removed soon.
+   * @deprecated
+   */
   legacyLastTickOffset?: number;
-
-  /**
-   * The position of the cursor at the point of completion of this slider if it was hit
-   * with as few movements as possible. This is set and used by difficulty calculation.
-   */
-  lazyEndPosition?: Vector2;
-
-  /**
-   * The distance travelled by the cursor upon completion of this slider if it was hit
-   * with as few movements as possible. This is set and used by difficulty calculation.
-   */
-  lazyTravelDistance = 0;
-
-  /**
-   * The time taken by the cursor upon completion of this slider if it was hit
-   * with as few movements as possible. This is set and used by difficulty calculation.
-   */
-  lazyTravelTime = 0;
 
   hitWindows = StandardHitWindows.empty;
 
