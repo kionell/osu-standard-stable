@@ -1,3 +1,8 @@
+import {
+  EventGenerator,
+  SliderEventType,
+} from 'osu-classes';
+
 import { StandardHitObject } from './StandardHitObject';
 import { Slider } from './Slider';
 import { SliderHead } from './SliderHead';
@@ -8,39 +13,38 @@ import { Spinner } from './Spinner';
 import { SpinnerTick } from './SpinnerTick';
 import { SpinnerBonusTick } from './SpinnerBonusTick';
 
-import {
-  EventGenerator,
-  SliderEventType,
-} from 'osu-classes';
-
+// TODO: This inheritance should be removed.
 export class StandardEventGenerator extends EventGenerator {
   static *generateSliderTicks(slider: Slider): Generator<StandardHitObject> {
     for (const event of EventGenerator.generate(slider)) {
-      const offset = slider.path.positionAt(event.progress);
-
       switch (event.eventType) {
+        case SliderEventType.Tick: {
+          const tick = new SliderTick();
+          const offset = slider.path.positionAt(event.progress);
+
+          tick.spanIndex = event.spanIndex;
+          tick.spanStartTime = event.spanStartTime;
+          tick.startTime = event.startTime;
+          tick.startPosition = slider.startPosition.add(offset);
+          tick.stackHeight = slider.stackHeight;
+          tick.scale = slider.scale;
+
+          yield tick;
+
+          break;
+        }
         case SliderEventType.Head: {
           const head = new SliderHead();
 
-          head.startPosition = slider.startPosition;
           head.startTime = event.startTime;
+          head.startPosition = slider.startPosition;
+          head.stackHeight = slider.stackHeight;
 
           yield head;
 
           break;
         }
-        case SliderEventType.Repeat: {
-          const repeat = new SliderRepeat(slider);
-
-          repeat.repeatIndex = event.spanIndex;
-          repeat.startTime = event.startTime;
-          repeat.startPosition = slider.startPosition.add(offset);
-          repeat.scale = slider.scale;
-
-          yield repeat;
-
-          break;
-        }
+        // TODO: Remove legacy last tick.
         case SliderEventType.LegacyLastTick: {
           /**
            * We need to use the LegacyLastTick here 
@@ -51,24 +55,28 @@ export class StandardEventGenerator extends EventGenerator {
            */
           const tail = new SliderTail(slider);
 
-          tail.repeatIndex = event.spanIndex as number;
+          tail.repeatIndex = event.spanIndex;
           tail.startTime = event.startTime;
           tail.startPosition = slider.endPosition;
+          tail.stackHeight = slider.stackHeight;
 
           yield tail;
 
           break;
         }
-        case SliderEventType.Tick: {
-          const tick = new SliderTick();
+        case SliderEventType.Repeat: {
+          const repeat = new SliderRepeat(slider);
+          const offset = slider.path.positionAt(event.progress);
 
-          tick.spanIndex = event.spanIndex as number;
-          tick.spanStartTime = event.spanStartTime as number;
-          tick.startTime = event.startTime;
-          tick.startPosition = slider.startPosition.add(offset);
-          tick.scale = slider.scale;
+          repeat.repeatIndex = event.spanIndex;
+          repeat.startTime = event.startTime;
+          repeat.startPosition = slider.startPosition.add(offset);
+          repeat.stackHeight = slider.stackHeight;
+          repeat.scale = slider.scale;
 
-          yield tick;
+          yield repeat;
+
+          break;
         }
       }
     }
