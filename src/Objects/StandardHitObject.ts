@@ -108,11 +108,11 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   }
 
   get stackedStartPosition(): Vector2 {
-    return this.startPosition.fadd(this.stackedOffset);
+    return this.startPosition.add(this.stackedOffset);
   }
 
   get stackedEndPosition(): Vector2 {
-    return this.endPosition.fadd(this.stackedOffset);
+    return this.endPosition.add(this.stackedOffset);
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {

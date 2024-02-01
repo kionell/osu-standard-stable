@@ -156,10 +156,10 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
 
     const lastCursorPosition = this._getEndCursorPosition(lastObj);
 
-    const scaledStackPos = baseObj.stackedStartPosition.fscale(scalingFactor);
-    const scaledCursorPos = lastCursorPosition.fscale(scalingFactor);
+    const scaledStackPos = baseObj.stackedStartPosition.scale(scalingFactor);
+    const scaledCursorPos = lastCursorPosition.scale(scalingFactor);
 
-    this.lazyJumpDistance = scaledStackPos.fsubtract(scaledCursorPos).flength();
+    this.lazyJumpDistance = scaledStackPos.subtract(scaledCursorPos).length();
     this.minimumJumpTime = this.strainTime;
     this.minimumJumpDistance = this.lazyJumpDistance;
 
@@ -178,7 +178,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
       const baseStackPos = baseObj.stackedStartPosition;
 
       const tailJumpDistance = Math.fround(
-        tailStackPos.fsubtract(baseStackPos).flength() * scalingFactor,
+        tailStackPos.subtract(baseStackPos).length() * scalingFactor,
       );
 
       const maxSliderRadius = StandardDifficultyHitObject.MAXIMUM_SLIDER_RADIUS;
@@ -194,12 +194,12 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     if (this._lastLastObject !== null && !(this._lastLastObject instanceof Spinner)) {
       const lastLastCursorPosition = this._getEndCursorPosition(this._lastLastObject);
 
-      const v1 = lastLastCursorPosition.fsubtract(lastObj.stackedStartPosition);
-      const v2 = baseObj.stackedStartPosition.fsubtract(lastCursorPosition);
+      const v1 = lastLastCursorPosition.subtract(lastObj.stackedStartPosition);
+      const v2 = baseObj.stackedStartPosition.subtract(lastCursorPosition);
 
-      const dot = v1.fdot(v2);
+      const dot = v1.dot(v2);
       const det = Math.fround(
-        Math.fround(v1.floatX * v2.floatY) - Math.fround(v1.floatY * v2.floatX),
+        Math.fround(v1.x * v2.y) - Math.fround(v1.y * v2.x),
       );
 
       this.angle = Math.abs(Math.atan2(det, dot));
@@ -222,7 +222,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     /**
      * Temporary lazy end position until a real result can be derived.
      */
-    slider.lazyEndPosition = slider.stackedStartPosition.fadd(endPosition);
+    slider.lazyEndPosition = slider.stackedStartPosition.add(endPosition);
 
     let currCursorPosition = slider.stackedStartPosition;
 
@@ -235,8 +235,8 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     for (let i = 1; i < slider.nestedHitObjects.length; ++i) {
       const currMovementObj = slider.nestedHitObjects[i] as StandardHitObject;
 
-      let currMovement = currMovementObj.stackedStartPosition.fsubtract(currCursorPosition);
-      let currMovementLength = scalingFactor * currMovement.flength();
+      let currMovement = currMovementObj.stackedStartPosition.subtract(currCursorPosition);
+      let currMovementLength = scalingFactor * currMovement.length();
 
       /**
        * Amount of movement required so that the cursor position needs to be updated.
@@ -253,13 +253,13 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
          * This code is designed to prevent buffing situations 
          * where lazy end is actually a less efficient movement.
          */
-        const lazyMovement = slider.lazyEndPosition.fsubtract(currCursorPosition);
+        const lazyMovement = slider.lazyEndPosition.subtract(currCursorPosition);
 
-        if (lazyMovement.flength() < currMovement.flength()) {
+        if (lazyMovement.length() < currMovement.length()) {
           currMovement = lazyMovement;
         }
 
-        currMovementLength = scalingFactor * currMovement.flength();
+        currMovementLength = scalingFactor * currMovement.length();
       }
       else if (currMovementObj instanceof SliderRepeat) {
         /**
@@ -278,7 +278,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
           (currMovementLength - requiredMovement) / currMovementLength,
         );
 
-        currCursorPosition = currCursorPosition.fadd(currMovement.fscale(movementScale));
+        currCursorPosition = currCursorPosition.add(currMovement.scale(movementScale));
         currMovementLength *= (currMovementLength - requiredMovement) / currMovementLength;
 
         slider.lazyTravelDistance = Math.fround(

@@ -53,7 +53,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get startX(): number {
     this._updateHeadPosition();
 
-    return this.startPosition.floatX;
+    return this.startPosition.x;
   }
 
   set startX(value: number) {
@@ -64,7 +64,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get startY(): number {
     this._updateHeadPosition();
 
-    return this.startPosition.floatY;
+    return this.startPosition.y;
   }
 
   set startY(value: number) {
@@ -75,7 +75,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get endX(): number {
     this._updateTailPosition();
 
-    return this.endPosition.floatX;
+    return this.endPosition.x;
   }
 
   set endX(value: number) {
@@ -86,7 +86,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
   get endY(): number {
     this._updateTailPosition();
 
-    return this.endPosition.floatY;
+    return this.endPosition.y;
   }
 
   set endY(value: number) {
@@ -134,7 +134,7 @@ export class Slider extends StandardHitObject implements ISlidableObject {
      * approximate it by setting it to the last point
      */
     if (isFinite(endPoint.x) && isFinite(endPoint.y)) {
-      return this.startPosition.fadd(endPoint);
+      return this.startPosition.add(endPoint);
     }
 
     const controlPoints = this.path.controlPoints;
