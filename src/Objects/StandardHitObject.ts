@@ -6,6 +6,7 @@ import {
   IHasPosition,
   IHasComboInformation,
   HitWindows,
+  DifficultyRange,
 } from 'osu-classes';
 
 import { StandardHitWindows } from '../Scoring';
@@ -121,7 +122,7 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
     this.timePreempt = Math.fround(
-      BeatmapDifficultySection.range(difficulty.approachRate, 1800, 1200, 450),
+      DifficultyRange.map(difficulty.approachRate, 1800, 1200, 450),
     );
 
     this.timeFadeIn = 400 * Math.min(1, this.timePreempt / StandardHitObject.PREEMPT_MIN);
