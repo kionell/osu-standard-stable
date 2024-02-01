@@ -30,18 +30,18 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   timePreempt = 600;
   timeFadeIn = 400;
 
-  private _scale = 0.5;
-  private _stackHeight = 0;
-  private _stackOffset = new Vector2(0, 0);
+  hitWindows: HitWindows = new StandardHitWindows();
 
+  isNewCombo = false;
+  comboOffset = 0;
   currentComboIndex = 0;
   comboIndex = 0;
   comboIndexWithOffsets = 0;
-  comboOffset = 0;
   lastInCombo = false;
-  isNewCombo = false;
 
-  hitWindows: HitWindows = new StandardHitWindows();
+  get stackedStartPosition(): Vector2 {
+    return this.startPosition.add(this.stackedOffset);
+  }
 
   get endPosition(): Vector2 {
     return this.startPosition;
@@ -63,23 +63,11 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
     this.endPosition.y = value;
   }
 
-  get scale(): number {
-    return this._scale;
+  get stackedEndPosition(): Vector2 {
+    return this.endPosition.add(this.stackedOffset);
   }
 
-  set scale(value: number) {
-    this._scale = value;
-
-    const stackOffset = Math.fround(
-      Math.fround(this._stackHeight * this._scale) * Math.fround(-6.4),
-    );
-
-    this._stackOffset.x = this._stackOffset.y = stackOffset;
-  }
-
-  get radius(): number {
-    return StandardHitObject.OBJECT_RADIUS * this._scale;
-  }
+  private _stackHeight = 0;
 
   get stackHeight(): number {
     return this._stackHeight;
@@ -99,6 +87,8 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
     });
   }
 
+  private _stackOffset = new Vector2(0, 0);
+
   get stackedOffset(): Vector2 {
     return this._stackOffset;
   }
@@ -107,12 +97,24 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
     this._stackOffset = value;
   }
 
-  get stackedStartPosition(): Vector2 {
-    return this.startPosition.add(this.stackedOffset);
+  get radius(): number {
+    return StandardHitObject.OBJECT_RADIUS * this._scale;
   }
 
-  get stackedEndPosition(): Vector2 {
-    return this.endPosition.add(this.stackedOffset);
+  private _scale = 0.5;
+
+  get scale(): number {
+    return this._scale;
+  }
+
+  set scale(value: number) {
+    this._scale = value;
+
+    const stackOffset = Math.fround(
+      Math.fround(this._stackHeight * this._scale) * Math.fround(-6.4),
+    );
+
+    this._stackOffset.x = this._stackOffset.y = stackOffset;
   }
 
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
