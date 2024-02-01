@@ -4,7 +4,10 @@ import {
   Vector2,
   SliderPath,
   HitSample,
-  ISlidableObject,
+  IHitObject,
+  IHasPathWithRepeats,
+  IHasGenerateTicks,
+  IHasSliderVelocity,
 } from 'osu-classes';
 
 import { StandardEventGenerator } from './StandardEventGenerator';
@@ -13,23 +16,8 @@ import { SliderHead } from './SliderHead';
 import { SliderTail } from './SliderTail';
 import { StandardHitWindows } from '../Scoring';
 
-export class Slider extends StandardHitObject implements ISlidableObject {
-  /**
-   * Spacing between {@link SliderTick}s of this {@link Slider}.
-   */
-  tickDistance = 0;
-
-  /**
-   * Use {@link tickDistanceMultiplier} instead.
-   * @deprecated
-   */
-  tickRate = 1;
-
-  /**
-   * The computed velocity of this {@link Slider}.
-   * This is the amount of path distance travelled in 1 ms.
-   */
-  velocity = 1;
+export class Slider extends StandardHitObject
+  implements IHitObject, IHasPathWithRepeats, IHasSliderVelocity, IHasGenerateTicks {
 
   /**
    * This is obsolete and will be removed soon.
