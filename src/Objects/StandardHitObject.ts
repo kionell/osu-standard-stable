@@ -133,6 +133,11 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
      */
     const scale = Math.fround(Math.fround(0.7) * Math.fround(difficulty.circleSize - 5));
 
+    /**
+     * TODO: This should be revisited with the next rebalance deployment.
+     * Current scale calculation lacks an optional fudge that was present in the osu!stable.
+     * That difference can potentially lead to errors in the difficulty calculation.
+     */
     this.scale = Math.fround(Math.fround(1 - Math.fround(scale / 5)) / 2);
   }
 

@@ -180,6 +180,10 @@ export class Slider extends StandardHitObject
 
     const timingPoint = controlPoints.timingPointAt(this.startTime);
 
+    /**
+     * TODO: This should be revisited with the next rebalance deployment.
+     * osu!lazer intentionally introduces floating point errors to match osu!stable.
+     */
     const scoringDistance = StandardHitObject.BASE_SCORING_DISTANCE
       * difficulty.sliderMultiplier * this.sliderVelocity;
 
