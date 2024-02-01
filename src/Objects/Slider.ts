@@ -27,6 +27,8 @@ export class Slider extends StandardHitObject
    */
   legacyLastTickOffset?: number;
 
+  nestedHitObjects: StandardHitObject[] = [];
+
   hitWindows = StandardHitWindows.empty;
 
   startPosition: Vector2 = new Vector2(0, 0);

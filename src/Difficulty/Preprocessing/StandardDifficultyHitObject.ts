@@ -233,7 +233,7 @@ export class StandardDifficultyHitObject extends DifficultyHitObject {
     const scalingFactor = StandardDifficultyHitObject.NORMALIZED_RADIUS / slider.radius;
 
     for (let i = 1; i < slider.nestedHitObjects.length; ++i) {
-      const currMovementObj = slider.nestedHitObjects[i] as StandardHitObject;
+      const currMovementObj = slider.nestedHitObjects[i];
 
       let currMovement = currMovementObj.stackedStartPosition.subtract(currCursorPosition);
       let currMovementLength = scalingFactor * currMovement.length();

@@ -32,9 +32,8 @@ export class StandardHardRock extends HardRock implements IApplicableToHitObject
     if (!(hitObject instanceof Slider)) return;
 
     const slider = hitObject as Slider;
-    const nestedHitObjects = slider.nestedHitObjects as StandardHitObject[];
 
-    nestedHitObjects.forEach((nested) => {
+    slider.nestedHitObjects.forEach((nested) => {
       if (nested instanceof SliderTick || nested instanceof SliderRepeat) {
         nested.startY = StandardHardRock.BASE_SIZE.y - nested.startY;
       }
