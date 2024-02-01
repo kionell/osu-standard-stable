@@ -15,6 +15,8 @@ import { StandardHitObject } from './StandardHitObject';
 import { SliderHead } from './SliderHead';
 import { SliderTail } from './SliderTail';
 import { StandardHitWindows } from '../Scoring';
+import { SliderTick } from './SliderTick';
+import { SliderRepeat } from './SliderRepeat';
 
 export class Slider extends StandardHitObject
   implements IHitObject, IHasPathWithRepeats, IHasSliderVelocity, IHasGenerateTicks {
@@ -115,6 +117,15 @@ export class Slider extends StandardHitObject
 
   nodeSamples: HitSample[][] = [];
 
+  /**
+   * The samples to be played when the slider tail is reached.
+   * Because of the legacy last tick these samples can't be attached to the slider tail
+   * otherwise they would play earlier than they're intended to.
+   * 
+   * For now, the samples are played by the slider itself at the correct end time.
+   */
+  tailSamples: HitSample[] = [];
+
   private _repeats = 0;
 
   get repeats(): number {
@@ -199,6 +210,54 @@ export class Slider extends StandardHitObject
     for (const nested of StandardEventGenerator.generateSliderTicks(this)) {
       this.nestedHitObjects.push(nested);
     }
+
+    this._updateNestedSamples();
+  }
+
+  /**
+   * Retrieves the samples at a particular node in a {@link Slider}.
+   * @param nodeIndex The node to attempt to retrieve the samples at.
+   * @returns The samples at the given node index, or default samples 
+   * of this object if the given node doesn't exist.
+   */
+  getNodeSamples(nodeIndex: number): HitSample[] {
+    return nodeIndex < this.nodeSamples.length
+      ? this.nodeSamples[nodeIndex]
+      : this.samples;
+  }
+
+  protected _updateNestedSamples(): void {
+    const foundSample = this.samples.find((sample) => {
+      return sample.name === HitSample.HIT_NORMAL;
+    });
+
+    /**
+     * TODO: remove this when guaranteed sort is present for samples
+     * (https://github.com/ppy/osu/issues/1933)
+     */
+    const firstSample = foundSample ?? this.samples[0] ?? null;
+
+    const sampleList: HitSample[] = [];
+
+    if (firstSample !== null) {
+      sampleList.push(firstSample.with({ name: 'slidertick' }));
+    }
+
+    this.nestedHitObjects.forEach((nested) => {
+      if (nested instanceof SliderTick) {
+        nested.samples = sampleList;
+      }
+
+      if (nested instanceof SliderRepeat) {
+        nested.samples = this.getNodeSamples(nested.repeatIndex + 1);
+      }
+    });
+
+    if (this.head !== null) {
+      this.head.samples = this.getNodeSamples(0);
+    }
+
+    this.tailSamples = this.getNodeSamples(this.repeats + 1);
   }
 
   private _updateHeadPosition(): void {
