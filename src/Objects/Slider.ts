@@ -27,11 +27,9 @@ export class Slider extends StandardHitObject
    */
   legacyLastTickOffset?: number;
 
-  nestedHitObjects: StandardHitObject[] = [];
+  nestedHitObjects: StandardHitObject[];
 
   hitWindows = StandardHitWindows.EMPTY;
-
-  startPosition: Vector2 = new Vector2(0, 0);
 
   constructor(options?: Partial<Slider>) {
     super(options);
@@ -56,6 +54,7 @@ export class Slider extends StandardHitObject
     this.tickDistanceMultiplier = options?.tickDistanceMultiplier ?? 1;
     this.sliderVelocity = options?.sliderVelocity ?? 1;
     this.generateTicks = options?.generateTicks ?? true;
+    this.nestedHitObjects = options?.nestedHitObjects ?? [];
   }
 
   get startX(): number {
@@ -114,7 +113,7 @@ export class Slider extends StandardHitObject
     return this.startPosition.add(this.path.curvePositionAt(1, this.spans));
   }
 
-  path: SliderPath = new SliderPath();
+  path: SliderPath;
 
   get distance(): number {
     return this.path.distance;
