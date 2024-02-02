@@ -163,7 +163,16 @@ export class Slider extends StandardHitObject
    * Use {@link tickDistanceMultiplier} instead.
    * @deprecated
    */
-  tickRate = 1;
+  get tickRate(): number {
+    return this.tickDistanceMultiplier;
+  }
+
+  /**
+   * @deprecated
+   */
+  set tickRate(value: number) {
+    this.tickDistanceMultiplier = value;
+  }
 
   /**
    * An extra multiplier that affects the number of {@link SliderTick}s 
