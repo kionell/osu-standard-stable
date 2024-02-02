@@ -9,8 +9,10 @@ import {
   IBeatmap,
   IHasCombo,
   IHasDuration,
+  IHasGenerateTicks,
   IHasPathWithRepeats,
   IHasPosition,
+  IHasSliderVelocity,
   IHitObject,
 } from 'osu-classes';
 
@@ -54,13 +56,13 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     const comboData = original as IHitObject & IHasCombo;
 
     return new Circle({
-      startPosition: positionData?.startPosition,
       startTime: original.startTime,
+      samples: original.samples,
+      startPosition: positionData?.startPosition,
+      isNewCombo: comboData?.isNewCombo,
+      comboOffset: comboData?.comboOffset,
       hitType: original.hitType,
       hitSound: original.hitSound,
-      samples: original.samples,
-      comboOffset: comboData?.comboOffset,
-      isNewCombo: comboData?.isNewCombo,
     });
   }
 
@@ -70,18 +72,22 @@ export class StandardBeatmapConverter extends BeatmapConverter {
   ): Slider {
     const positionData = original as IHitObject & IHasPathWithRepeats & IHasPosition;
     const comboData = original as IHitObject & IHasPathWithRepeats & IHasCombo;
+    const generateTicksData = original as IHitObject & IHasPathWithRepeats & IHasGenerateTicks;
+    const sliderVelocityData = original as IHitObject & IHasPathWithRepeats & IHasSliderVelocity;
 
     const converted = new Slider({
-      repeats: original.repeats,
-      nodeSamples: original.nodeSamples,
-      path: original.path,
-      startPosition: positionData?.startPosition,
       startTime: original.startTime,
+      samples: original.samples,
+      path: original.path,
+      nodeSamples: original.nodeSamples,
+      repeats: original.repeats,
+      startPosition: positionData?.startPosition,
+      isNewCombo: comboData?.isNewCombo,
+      comboOffset: comboData?.comboOffset,
+      generateTicks: generateTicksData?.generateTicks,
+      sliderVelocity: sliderVelocityData?.sliderVelocity,
       hitType: original.hitType,
       hitSound: original.hitSound,
-      samples: original.samples,
-      comboOffset: comboData?.comboOffset,
-      isNewCombo: comboData?.isNewCombo,
     });
 
     /**
@@ -104,14 +110,14 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     const comboData = original as IHitObject & IHasDuration & IHasCombo;
 
     return new Spinner({
+      startTime: original.startTime,
+      samples: original.samples,
       endTime: original.endTime,
       startPosition: positionData?.startPosition,
-      startTime: original.startTime,
+      isNewCombo: comboData?.isNewCombo,
+      comboOffset: comboData?.comboOffset,
       hitType: original.hitType,
       hitSound: original.hitSound,
-      samples: original.samples,
-      comboOffset: comboData?.comboOffset,
-      isNewCombo: comboData?.isNewCombo,
     });
   }
 
