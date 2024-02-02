@@ -12,7 +12,7 @@ export abstract class SliderEnd extends Circle {
 
   repeatIndex: number;
 
-  repeatIndex = 0;
+  hitWindows = StandardHitWindows.EMPTY;
 
   constructor(slider: Slider, options?: Partial<SliderEnd>) {
     super(options);
@@ -45,14 +45,8 @@ export abstract class SliderEnd extends Circle {
     }
 
     /**
-     * Taken from osu-stable.
-     */
-    const FIRST_END_CIRCLE_PREEMPT_ADJUST = Math.fround(2 / 3);
-
-    /**
      * The first end circle should fade in with the slider.
      */
-    this.timePreempt = this.startTime - this._slider.startTime
-      + this._slider.timePreempt * FIRST_END_CIRCLE_PREEMPT_ADJUST;
+    this.timePreempt = this.startTime - this._slider.startTime;
   }
 }
