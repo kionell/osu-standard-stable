@@ -14,7 +14,7 @@
 !package-lock.json
 !package.json
 !README.md
-!rollup.config.js
+!rollup.config.mjs
 !jest.config.js
 !tsconfig.json
 !typedoc.json
