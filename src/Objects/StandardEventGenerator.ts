@@ -19,28 +19,25 @@ export class StandardEventGenerator extends EventGenerator {
     for (const event of EventGenerator.generate(slider)) {
       switch (event.eventType) {
         case SliderEventType.Tick: {
-          const tick = new SliderTick();
           const offset = slider.path.positionAt(event.progress);
 
-          tick.spanIndex = event.spanIndex;
-          tick.spanStartTime = event.spanStartTime;
-          tick.startTime = event.startTime;
-          tick.startPosition = slider.startPosition.add(offset);
-          tick.stackHeight = slider.stackHeight;
-          tick.scale = slider.scale;
-
-          yield tick;
+          yield new SliderTick({
+            spanIndex: event.spanIndex,
+            spanStartTime: event.spanStartTime,
+            startTime: event.startTime,
+            startPosition: slider.startPosition.add(offset),
+            stackHeight: slider.stackHeight,
+            scale: slider.scale,
+          });
 
           break;
         }
         case SliderEventType.Head: {
-          const head = new SliderHead();
-
-          head.startTime = event.startTime;
-          head.startPosition = slider.startPosition;
-          head.stackHeight = slider.stackHeight;
-
-          yield head;
+          yield new SliderHead({
+            startTime: event.startTime,
+            startPosition: slider.startPosition,
+            stackHeight: slider.stackHeight,
+          });
 
           break;
         }
@@ -53,28 +50,25 @@ export class StandardEventGenerator extends EventGenerator {
            * is not used for any meaningful purpose in gameplay.
            * if this is to change, we should revisit this.
            */
-          const tail = new SliderTail(slider);
-
-          tail.repeatIndex = event.spanIndex;
-          tail.startTime = event.startTime;
-          tail.startPosition = slider.endPosition;
-          tail.stackHeight = slider.stackHeight;
-
-          yield tail;
+          yield new SliderTail(slider, {
+            repeatIndex: event.spanIndex,
+            startTime: event.startTime,
+            startPosition: slider.endPosition,
+            stackHeight: slider.stackHeight,
+          });
 
           break;
         }
         case SliderEventType.Repeat: {
-          const repeat = new SliderRepeat(slider);
           const offset = slider.path.positionAt(event.progress);
 
-          repeat.repeatIndex = event.spanIndex;
-          repeat.startTime = event.startTime;
-          repeat.startPosition = slider.startPosition.add(offset);
-          repeat.stackHeight = slider.stackHeight;
-          repeat.scale = slider.scale;
-
-          yield repeat;
+          yield new SliderRepeat(slider, {
+            repeatIndex: event.spanIndex,
+            startTime: event.startTime,
+            startPosition: slider.startPosition.add(offset),
+            stackHeight: slider.stackHeight,
+            scale: slider.scale,
+          });
 
           break;
         }
@@ -86,13 +80,11 @@ export class StandardEventGenerator extends EventGenerator {
     const totalSpins = spinner.maximumBonusSpins + spinner.spinsRequired;
 
     for (let i = 0; i < totalSpins; ++i) {
-      const tick = i < spinner.spinsRequired
-        ? new SpinnerTick()
-        : new SpinnerBonusTick();
+      const startTime = spinner.startTime + (i + 1 / totalSpins) * spinner.duration;
 
-      tick.startTime = spinner.startTime + (i + 1 / totalSpins) * spinner.duration;
-
-      yield tick;
+      yield i < spinner.spinsRequired
+        ? new SpinnerTick({ startTime })
+        : new SpinnerBonusTick({ startTime });
     }
   }
 }

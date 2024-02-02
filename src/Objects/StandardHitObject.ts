@@ -28,8 +28,8 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
    */
   static PREEMPT_MIN = 450;
 
-  timePreempt = 600;
-  timeFadeIn = 400;
+  timePreempt: number;
+  timeFadeIn: number;
 
   hitWindows: HitWindows = new StandardHitWindows();
 
@@ -39,6 +39,21 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   comboIndex = 0;
   comboIndexWithOffsets = 0;
   lastInCombo = false;
+
+  constructor(options?: Partial<StandardHitObject>) {
+    super(options);
+
+    this.timePreempt = options?.timePreempt ?? 600;
+    this.timeFadeIn = options?.timeFadeIn ?? 400;
+    this.isNewCombo = options?.isNewCombo ?? false;
+    this.comboOffset = options?.comboOffset ?? 0;
+    this.currentComboIndex = options?.currentComboIndex ?? 0;
+    this.comboIndex = options?.comboIndex ?? 0;
+    this.comboIndexWithOffsets = options?.comboIndexWithOffsets ?? 0;
+    this.lastInCombo = options?.lastInCombo ?? false;
+    this.stackHeight = options?.stackHeight ?? 0;
+    this.scale = options?.scale ?? 0.5;
+  }
 
   get stackedStartPosition(): Vector2 {
     return this.startPosition.add(this.stackedOffset);

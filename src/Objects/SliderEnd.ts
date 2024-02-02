@@ -1,22 +1,24 @@
-import { Circle } from './Circle';
-import { Slider } from './Slider';
-
 import {
   ControlPointInfo,
   BeatmapDifficultySection,
 } from 'osu-classes';
+
+import { Circle } from './Circle';
+import { Slider } from './Slider';
 import { StandardHitWindows } from '../Scoring';
 
 export abstract class SliderEnd extends Circle {
   protected _slider: Slider;
 
+  repeatIndex: number;
+
   repeatIndex = 0;
 
-  hitWindows = StandardHitWindows.empty;
+  constructor(slider: Slider, options?: Partial<SliderEnd>) {
+    super(options);
 
-  constructor(slider: Slider) {
-    super();
     this._slider = slider;
+    this.repeatIndex = options?.repeatIndex ?? 0;
   }
 
   get spanDuration(): number {

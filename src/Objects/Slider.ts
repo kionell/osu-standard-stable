@@ -29,9 +29,34 @@ export class Slider extends StandardHitObject
 
   nestedHitObjects: StandardHitObject[] = [];
 
-  hitWindows = StandardHitWindows.empty;
+  hitWindows = StandardHitWindows.EMPTY;
 
   startPosition: Vector2 = new Vector2(0, 0);
+
+  constructor(options?: Partial<Slider>) {
+    super(options);
+
+    if (typeof options?.legacyLastTickOffset === 'number') {
+      this.legacyLastTickOffset = options.legacyLastTickOffset;
+    }
+
+    this.path = options?.path ?? new SliderPath();
+
+    if (options?.lazyEndPosition) {
+      this.lazyEndPosition = options.lazyEndPosition;
+    }
+
+    this.lazyTravelDistance = options?.lazyTravelDistance ?? 0;
+    this.lazyTravelTime = options?.lazyTravelTime ?? 0;
+    this.nodeSamples = options?.nodeSamples ?? [];
+    this.tailSamples = options?.tailSamples ?? [];
+    this._repeats = options?.repeats ?? 0;
+    this.velocity = options?.velocity ?? 1;
+    this.tickDistance = options?.tickDistance ?? 0;
+    this.tickDistanceMultiplier = options?.tickDistanceMultiplier ?? 1;
+    this.sliderVelocity = options?.sliderVelocity ?? 1;
+    this.generateTicks = options?.generateTicks ?? true;
+  }
 
   get startX(): number {
     this._updateHeadPosition();
@@ -109,15 +134,15 @@ export class Slider extends StandardHitObject
    * The distance travelled by the cursor upon completion of this slider if it was hit
    * with as few movements as possible. This is set and used by difficulty calculation.
    */
-  lazyTravelDistance = 0;
+  lazyTravelDistance: number;
 
   /**
    * The time taken by the cursor upon completion of this slider if it was hit
    * with as few movements as possible. This is set and used by difficulty calculation.
    */
-  lazyTravelTime = 0;
+  lazyTravelTime: number;
 
-  nodeSamples: HitSample[][] = [];
+  nodeSamples: HitSample[][];
 
   /**
    * The samples to be played when the slider tail is reached.
@@ -126,9 +151,9 @@ export class Slider extends StandardHitObject
    * 
    * For now, the samples are played by the slider itself at the correct end time.
    */
-  tailSamples: HitSample[] = [];
+  tailSamples: HitSample[];
 
-  private _repeats = 0;
+  private _repeats: number;
 
   get repeats(): number {
     return this._repeats;
@@ -152,12 +177,12 @@ export class Slider extends StandardHitObject
    * The computed velocity of this {@link Slider}.
    * This is the amount of path distance travelled in 1 ms.
    */
-  velocity = 1;
+  velocity: number;
 
   /**
    * Spacing between {@link SliderTick}s of this {@link Slider}.
    */
-  tickDistance = 0;
+  tickDistance: number;
 
   /**
    * Use {@link tickDistanceMultiplier} instead.
@@ -180,10 +205,10 @@ export class Slider extends StandardHitObject
    * An increase in this value increases {@link tickDistance}, 
    * which reduces the number of ticks generated.
    */
-  tickDistanceMultiplier = 1;
+  tickDistanceMultiplier: number;
 
-  sliderVelocity = 1;
-  generateTicks = true;
+  sliderVelocity: number;
+  generateTicks: boolean;
 
   get head(): SliderHead | null {
     const obj = this.nestedHitObjects.find((n) => n instanceof SliderHead);

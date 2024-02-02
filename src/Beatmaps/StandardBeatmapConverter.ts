@@ -8,17 +8,16 @@ import {
   BeatmapConverter,
   IBeatmap,
   IHasCombo,
+  IHasDuration,
+  IHasPathWithRepeats,
   IHasPosition,
   IHitObject,
-  ISlidableObject,
-  ISpinnableObject,
-  Vector2,
 } from 'osu-classes';
 
 export class StandardBeatmapConverter extends BeatmapConverter {
   canConvert(beatmap: IBeatmap): boolean {
     return beatmap.hitObjects.every((h) => {
-      return (h as unknown as IHasPosition).startPosition;
+      return (h as IHitObject & IHasPosition).startPosition;
     });
   }
 
@@ -35,38 +34,55 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     }
   }
 
-  private _convertHitObject(hitObject: IHitObject, beatmap: IBeatmap) {
-    const slidable = hitObject as ISlidableObject;
-    const spinnable = hitObject as ISpinnableObject;
+  private _convertHitObject(original: IHitObject, beatmap: IBeatmap) {
+    const pathData = original as IHitObject & IHasPathWithRepeats;
+    const durationData = original as IHitObject & IHasDuration;
 
-    if (slidable.path) {
-      return this._convertSlider(slidable, beatmap);
+    if (pathData.path) {
+      return this._convertSlider(pathData, beatmap);
     }
 
-    if (typeof spinnable.endTime === 'number') {
-      return this._convertSpinner(spinnable);
+    if (typeof durationData.endTime === 'number') {
+      return this._convertSpinner(durationData);
     }
 
-    return this._convertCircle(hitObject);
+    return this._convertCircle(original);
   }
 
-  private _convertCircle(obj: IHitObject): Circle {
-    const converted = new Circle();
+  private _convertCircle(original: IHitObject): Circle {
+    const positionData = original as IHitObject & IHasPosition;
+    const comboData = original as IHitObject & IHasCombo;
 
-    this._copyProperties(converted, obj);
-
-    return converted;
+    return new Circle({
+      startPosition: positionData?.startPosition,
+      startTime: original.startTime,
+      hitType: original.hitType,
+      hitSound: original.hitSound,
+      samples: original.samples,
+      comboOffset: comboData?.comboOffset,
+      isNewCombo: comboData?.isNewCombo,
+    });
   }
 
-  private _convertSlider(obj: ISlidableObject, beatmap: IBeatmap): Slider {
-    const converted = new Slider();
+  private _convertSlider(
+    original: IHitObject & IHasPathWithRepeats,
+    beatmap: IBeatmap,
+  ): Slider {
+    const positionData = original as IHitObject & IHasPathWithRepeats & IHasPosition;
+    const comboData = original as IHitObject & IHasPathWithRepeats & IHasCombo;
 
-    this._copyProperties(converted, obj);
-
-    converted.repeats = obj.repeats;
-    converted.nodeSamples = obj.nodeSamples;
-    converted.path = obj.path;
-    converted.legacyLastTickOffset = obj?.legacyLastTickOffset ?? 0;
+    const converted = new Slider({
+      repeats: original.repeats,
+      nodeSamples: original.nodeSamples,
+      path: original.path,
+      startPosition: positionData?.startPosition,
+      startTime: original.startTime,
+      hitType: original.hitType,
+      hitSound: original.hitSound,
+      samples: original.samples,
+      comboOffset: comboData?.comboOffset,
+      isNewCombo: comboData?.isNewCombo,
+    });
 
     /**
      * Prior to v8, speed multipliers don't adjust for how many
@@ -74,10 +90,8 @@ export class StandardBeatmapConverter extends BeatmapConverter {
      * This results in more (or less) ticks being generated
      * in <v8 maps for the same time duration.
      */
-    converted.tickRate = 1;
-
     if (beatmap.fileFormat < 8) {
-      const diffPoint = beatmap.controlPoints.difficultyPointAt(obj.startTime);
+      const diffPoint = beatmap.controlPoints.difficultyPointAt(original.startTime);
 
       converted.tickDistanceMultiplier = Math.fround(1 / diffPoint.sliderVelocity);
     }
@@ -85,27 +99,20 @@ export class StandardBeatmapConverter extends BeatmapConverter {
     return converted;
   }
 
-  private _convertSpinner(obj: ISpinnableObject): Spinner {
-    const converted = new Spinner();
+  private _convertSpinner(original: IHitObject & IHasDuration): Spinner {
+    const positionData = original as IHitObject & IHasDuration & IHasPosition;
+    const comboData = original as IHitObject & IHasDuration & IHasCombo;
 
-    this._copyProperties(converted, obj);
-
-    converted.endTime = obj.endTime;
-
-    return converted;
-  }
-
-  private _copyProperties(converted: StandardHitObject, obj: IHitObject): void {
-    const posObj = obj as ISpinnableObject & IHasPosition;
-    const comboObj = obj as ISpinnableObject & IHasCombo;
-
-    converted.startPosition = posObj?.startPosition ?? new Vector2(0, 0);
-    converted.startTime = obj.startTime;
-    converted.hitType = obj.hitType;
-    converted.hitSound = obj.hitSound;
-    converted.samples = obj.samples;
-    converted.comboOffset = comboObj?.comboOffset ?? 0;
-    converted.isNewCombo = comboObj?.isNewCombo ?? false;
+    return new Spinner({
+      endTime: original.endTime,
+      startPosition: positionData?.startPosition,
+      startTime: original.startTime,
+      hitType: original.hitType,
+      hitSound: original.hitSound,
+      samples: original.samples,
+      comboOffset: comboData?.comboOffset,
+      isNewCombo: comboData?.isNewCombo,
+    });
   }
 
   createBeatmap(): StandardBeatmap {

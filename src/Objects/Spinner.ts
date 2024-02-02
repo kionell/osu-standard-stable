@@ -15,7 +15,7 @@ export class Spinner extends StandardHitObject implements IHitObject, IHasDurati
    * The RPM required to clear the spinner at ODs [ 0, 5, 10 ].
    */
   private static readonly CLEAR_RPM_RANGE = [90, 150, 225] as const;
-  
+
   /**
    * The RPM required to complete the spinner and receive full score at ODs [ 0, 5, 10 ].
    */
@@ -44,7 +44,7 @@ export class Spinner extends StandardHitObject implements IHitObject, IHasDurati
   /**
    * Number of spins required to finish the spinner without miss.
    */
-  spinsRequired = 1;
+  spinsRequired: number;
 
   /**
    * The number of spins required to start receiving bonus score.
@@ -57,14 +57,22 @@ export class Spinner extends StandardHitObject implements IHitObject, IHasDurati
   /**
    * Number of spins available to give bonus, beyond {@link spinsRequired}.
    */
-  maximumBonusSpins = 1;
+  maximumBonusSpins: number;
 
   /**
    * The time at which this spinner ends.
    */
-  endTime = 0;
+  endTime: number;
 
-  hitWindows = StandardHitWindows.empty;
+  hitWindows = StandardHitWindows.EMPTY;
+
+  constructor(options?: Partial<Spinner>) {
+    super(options);
+
+    this.spinsRequired = options?.spinsRequired ?? 1;
+    this.maximumBonusSpins = options?.maximumBonusSpins ?? 1;
+    this.endTime = options?.endTime ?? 0;
+  }
 
   get duration(): number {
     return this.endTime - this.startTime;
@@ -91,9 +99,9 @@ export class Spinner extends StandardHitObject implements IHitObject, IHasDurati
     const DURATION_ERROR = 0.0001 as const;
 
     this.spinsRequired = Math.trunc(minRps * secondsDuration + DURATION_ERROR);
-    this.maximumBonusSpins = Math.trunc(maxRps * secondsDuration + DURATION_ERROR) 
+    this.maximumBonusSpins = Math.trunc(maxRps * secondsDuration + DURATION_ERROR)
       - this.spinsRequired - Spinner.BONUS_SPINS_GAP;
-      
+
     this.maximumBonusSpins = Math.max(0, this.maximumBonusSpins);
   }
 
