@@ -78,6 +78,10 @@ export class Spinner extends StandardHitObject implements IHitObject, IHasDurati
     return this.endTime - this.startTime;
   }
 
+  set duration(value: number) {
+    this.endTime = this.startTime + value;
+  }
+
   applyDefaultsToSelf(controlPoints: ControlPointInfo, difficulty: BeatmapDifficultySection): void {
     super.applyDefaultsToSelf(controlPoints, difficulty);
 
