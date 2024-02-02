@@ -108,9 +108,9 @@ export class Spinner extends StandardHitObject implements IHitObject, IHasDurati
   clone(): this {
     const cloned = super.clone();
 
-    cloned.endTime = this.endTime;
     cloned.spinsRequired = this.spinsRequired;
     cloned.maximumBonusSpins = this.maximumBonusSpins;
+    cloned.endTime = this.endTime;
 
     return cloned;
   }

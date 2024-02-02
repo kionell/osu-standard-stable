@@ -163,12 +163,15 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
   clone(): this {
     const cloned = super.clone();
 
+    cloned.timePreempt = this.timePreempt;
+    cloned.timeFadeIn = this.timeFadeIn;
     cloned.stackHeight = this.stackHeight;
     cloned.scale = this.scale;
+    cloned.isNewCombo = this.isNewCombo;
+    cloned.comboOffset = this.comboOffset;
     cloned.currentComboIndex = this.currentComboIndex;
     cloned.comboIndex = this.comboIndex;
     cloned.comboIndexWithOffsets = this.comboIndexWithOffsets;
-    cloned.comboOffset = this.comboOffset;
     cloned.lastInCombo = this.lastInCombo;
 
     return cloned;

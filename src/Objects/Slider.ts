@@ -290,13 +290,25 @@ export class Slider extends StandardHitObject
   clone(): this {
     const cloned = super.clone();
 
-    cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
-    cloned.velocity = this.velocity;
-    cloned.repeats = this.repeats;
+    if (typeof this?.legacyLastTickOffset === 'number') {
+      cloned.legacyLastTickOffset = this.legacyLastTickOffset;
+    }
+
+    if (this?.lazyEndPosition) {
+      cloned.lazyEndPosition = this.lazyEndPosition;
+    }
+
+    cloned.lazyTravelDistance = this.lazyTravelDistance;
+    cloned.lazyTravelTime = this.lazyTravelTime;
     cloned.path = this.path.clone();
+    cloned.nodeSamples = this.nodeSamples.map((n) => n.map((s) => s.clone()));
+    cloned.tailSamples = this.tailSamples;
+    cloned.repeats = this.repeats;
+    cloned.velocity = this.velocity;
     cloned.tickDistance = this.tickDistance;
-    cloned.tickRate = this.tickRate;
-    cloned.legacyLastTickOffset = this.legacyLastTickOffset;
+    cloned.tickDistanceMultiplier = this.tickDistanceMultiplier;
+    cloned.sliderVelocity = this.sliderVelocity;
+    cloned.generateTicks = this.generateTicks;
 
     return cloned;
   }
