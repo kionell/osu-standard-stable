@@ -90,11 +90,26 @@ export abstract class StandardHitObject extends HitObject implements IHasPositio
 
   private _stackOffset = new Vector2(0, 0);
 
+  /**
+   * Use {@link stackOffset} instead.
+   * @deprecated
+   */
   get stackedOffset(): Vector2 {
+    return this.stackOffset;
+  }
+
+  /**
+   * @deprecated
+   */
+  set stackedOffset(value: Vector2) {
+    this.stackOffset = value;
+  }
+
+  get stackOffset(): Vector2 {
     return this._stackOffset;
   }
 
-  set stackedOffset(value: Vector2) {
+  set stackOffset(value: Vector2) {
     this._stackOffset = value;
   }
 
