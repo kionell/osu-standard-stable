@@ -3,6 +3,7 @@
   "version": "5.0.0",
   "description": "osu!stable version of osu!standard ruleset based on osu!lazer source code.",
   "exports": {
+    "types": "./lib/index.d.ts",
     "import": "./lib/index.mjs",
     "require": "./lib/index.cjs"
   },
